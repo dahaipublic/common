@@ -1,4 +1,4 @@
-module common
+module github.com/dahaipublic/common
 
 go 1.24.1
 
