@@ -1,7 +1,7 @@
 package util
 
 import (
-	"common"
+	"github.com/dahaipublic/common"
 	"net/http"
 	"strings"
 

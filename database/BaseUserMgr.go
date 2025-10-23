@@ -10,14 +10,14 @@ import (
 	"strconv"
 	"time"
 
-	"common"
-	"common/model"
-	"common/util"
-	"common/xstr"
+	"github.com/dahaipublic/common"
+	"github.com/dahaipublic/common/model"
+	"github.com/dahaipublic/common/util"
+	"github.com/dahaipublic/common/xstr"
 
 	"gorm.io/gorm"
 
-	xtime "common/time"
+	xtime "github.com/dahaipublic/common/time"
 )
 
 // 通过设备id获取用户id

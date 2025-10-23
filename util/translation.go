@@ -1,8 +1,8 @@
 package util
 
 import (
-	"common"
-	"common/util"
+	"github.com/dahaipublic/common"
+	"github.com/dahaipublic/common/util"
 	"time"
 )
 

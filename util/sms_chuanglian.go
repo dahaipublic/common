@@ -2,11 +2,11 @@ package util
 
 import (
 	"bytes"
-	"common"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/dahaipublic/common"
 	"io/ioutil"
 	"net/http"
 	"sort"

@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 
-	"common"
+	"github.com/dahaipublic/common"
 )
 
 // type IDB interface {

@@ -17,11 +17,10 @@ package common
 
 import (
 	"errors"
+	"github.com/dahaipublic/common/base58"
 	"strconv"
 	"sync"
 	"time"
-
-	"common/base58"
 )
 
 const (

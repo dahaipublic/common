@@ -1,8 +1,10 @@
 package conf
 
 import (
-	"common/xstr"
 	"fmt"
+	"github.com/dahaipublic/common"
+	"github.com/dahaipublic/common/xstr"
+	"gopkg.in/yaml.v3"
 
 	"os"
 	"path/filepath"
@@ -57,7 +59,7 @@ func LoadBaseConfig() *BaseConfig {
 	_, _ = time.LoadLocation("Europe/Istanbul")
 	//nowStr := time.Now().Format("20060102")0
 	LogDir := Conf.RootPath + "/logs/"
-	Logger.Start(LogDir, CurrentServerName)
+	common.Logger.Start(LogDir, common.CurrentServerName)
 	//Conf.LogPath = LogDir + CurrentServerName + "_" + nowStr + ".log"
 	//os.MkdirAll(LogDir, 0666)
 	//f, _ := os.OpenFile(Conf.LogPath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
@@ -73,11 +75,11 @@ func LoadBaseConfig() *BaseConfig {
 	//Conf.EtcPath = "D:\\trball\\etc\\"
 	cfgFilePath := fmt.Sprintf("%scommon_%s.yaml", Conf.EtcPath, Conf.SetupMode)
 
-	Info("now=%v", time.Now())
-	Info("Conf filename=%s", cfgFilePath)
-	Info("Conf.SetupMode=%s", Conf.SetupMode)
-	Info("Conf.RootPath=%s", Conf.RootPath)
-	Info("Conf.EtcPath=%s", Conf.EtcPath)
+	common.Info("now=%v", time.Now())
+	common.Info("Conf filename=%s", cfgFilePath)
+	common.Info("Conf.SetupMode=%s", Conf.SetupMode)
+	common.Info("Conf.RootPath=%s", Conf.RootPath)
+	common.Info("Conf.EtcPath=%s", Conf.EtcPath)
 	LoadYamlCfg(cfgFilePath, &Conf)
 	return Conf
 }

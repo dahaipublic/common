@@ -1,10 +1,12 @@
 package pg
 
+import "github.com/dahaipublic/common/database"
+
 // import (
 // 	_ "github.com/lib/pq"
 // )
 
-type CPgDB struct{ CDatabase }
+type CPgDB struct{ database.CDatabase }
 
 // var DB CPgDB
 

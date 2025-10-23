@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"common/conf"
+	"github.com/dahaipublic/common/conf"
 
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/google/uuid"

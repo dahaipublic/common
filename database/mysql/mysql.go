@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"log"
 
-	"common"
-	"common/conf"
-	"common/database"
-	xredis "common/database/redis"
-	"common/model"
+	"github.com/dahaipublic/common"
+	"github.com/dahaipublic/common/conf"
+	"github.com/dahaipublic/common/database"
+	xredis "github.com/dahaipublic/common/database/redis"
+	"github.com/dahaipublic/common/model"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

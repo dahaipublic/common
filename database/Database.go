@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	//	"fmt"
 
-	"common"
+	"github.com/dahaipublic/common"
 )
 
 var DB IDatabase

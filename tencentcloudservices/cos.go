@@ -1,7 +1,7 @@
 package tencentcloudservices
 
 // import (
-// 	"common/conf"
+// 	"github.com/dahaipublic/common/conf"
 // 	"context"
 // 	"fmt"
 // 	"mime/multipart"

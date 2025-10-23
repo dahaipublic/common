@@ -1,8 +1,9 @@
 package nami
 
 import (
-	"common/model"
 	"fmt"
+	"github.com/dahaipublic/common/database"
+	"github.com/dahaipublic/common/model"
 	"strconv"
 	"strings"
 	"time"
@@ -27,7 +28,7 @@ func MatchLiveArrayToString(arr []interface{}) string {
 	return strings.Join(strArr, ",")
 }
 func GetLivePushUrl() string {
-	pushUrl, err := Redis.GetRedis().Get(model.RedisKeyMatchVideoPushUrl).Result()
+	pushUrl, err := database.Redis.GetRedis().Get(model.RedisKeyMatchVideoPushUrl).Result()
 	if err != nil {
 		pushUrl = "rtmp://livepush.migucloudeg.com"
 		SetLivePushUrl(pushUrl)
@@ -35,10 +36,10 @@ func GetLivePushUrl() string {
 	return pushUrl
 }
 func SetLivePushUrl(pushUrl string) {
-	Redis.GetRedis().Set(model.RedisKeyMatchVideoPushUrl, pushUrl, time.Second*model.RedisExpirationOneWeek*9999)
+	database.Redis.GetRedis().Set(model.RedisKeyMatchVideoPushUrl, pushUrl, time.Second*model.RedisExpirationOneWeek*9999)
 }
 func GetLivePlayUrl() string {
-	playUrl, err := Redis.GetRedis().Get(model.RedisKeyMatchVideoPlayUrl).Result()
+	playUrl, err := database.Redis.GetRedis().Get(model.RedisKeyMatchVideoPlayUrl).Result()
 	if err != nil {
 		playUrl = "https://liveplay.migucloudeg.com"
 		SetLivePlayUrl(playUrl)
@@ -46,5 +47,5 @@ func GetLivePlayUrl() string {
 	return playUrl
 }
 func SetLivePlayUrl(playUrl string) {
-	Redis.GetRedis().Set(model.RedisKeyMatchVideoPlayUrl, playUrl, time.Second*model.RedisExpirationOneWeek*9999)
+	database.Redis.GetRedis().Set(model.RedisKeyMatchVideoPlayUrl, playUrl, time.Second*model.RedisExpirationOneWeek*9999)
 }

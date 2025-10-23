@@ -1,8 +1,8 @@
 package blademaster
 
 import (
-	"common/conf"
 	"context"
+	"github.com/dahaipublic/common/conf"
 	"sync"
 
 	"github.com/redis/go-redis/v9"

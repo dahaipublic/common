@@ -4,9 +4,9 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"github.com/dahaipublic/common/conf"
 	"path"
 
-	"common/conf"
 	"mime/multipart"
 	"strings"
 	"time"
