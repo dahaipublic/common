@@ -1,12 +1,16 @@
 package mysql
 
+import "C"
 import (
 	"database/sql"
 	"fmt"
 	"log"
 
-	xredis "github.com/dahaipublic/common/database/redis"
-	"github.com/dahaipublic/common/model"
+	. "common"
+	. "common/conf"
+	. "common/database"
+	xredis "common/database/redis"
+	"common/model"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
