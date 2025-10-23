@@ -5,6 +5,7 @@ import (
 	"context"
 	"sync"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/zishang520/engine.io/v2/types"
 	"github.com/zishang520/socket.io-go-redis/adapter"
 	rtypes "github.com/zishang520/socket.io-go-redis/types"
