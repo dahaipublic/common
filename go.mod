@@ -1,8 +1,6 @@
 module github.com/dahaipublic/common
 
-go 1.24.1
-
-toolchain go1.24.7
+go 1.24.7
 
 require (
 	firebase.google.com/go v3.13.0+incompatible
