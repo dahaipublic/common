@@ -2,7 +2,6 @@ package util
 
 import (
 	"github.com/dahaipublic/common"
-	"github.com/dahaipublic/common/util"
 	"time"
 )
 
@@ -141,5 +140,5 @@ func GetWeekTypeByTimestamp(ts int64, lanID common.ELanDef) string {
 	if weekday == 0 {
 		weekday = 7 // 周日改成 7
 	}
-	return util.GetTranslation("weekday", lanID, weekday)
+	return GetTranslation("weekday", lanID, weekday)
 }
