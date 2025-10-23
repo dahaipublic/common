@@ -7,8 +7,8 @@ import (
 	"log"
 
 	"common"
-	. "common/conf"
-	. "common/database"
+	"common/conf"
+	"common/database"
 	xredis "common/database/redis"
 	"common/model"
 
@@ -22,27 +22,27 @@ import (
 )
 
 func InitDB() {
-	mysql := &Conf.Mysql
-	redis := &Conf.Redis
+	mysql := &conf.Conf.Mysql
+	redis := &conf.Conf.Redis
 	//sql链接
 	dsn := MakeMysqlDsn(
 		mysql.Host, mysql.Port, mysql.Username, mysql.Password, mysql.Name, mysql.Charset)
-	ORMDB = GormNew(dsn, mysql.MaxIdleConn, mysql.MaxOpenConn)
+	database.ORMDB = GormNew(dsn, mysql.MaxIdleConn, mysql.MaxOpenConn)
 	r := xredis.New(redis.Host, redis.PassWord, redis.Db)
-	Redis = xredis.NewRedis(r)
-	db, err := ORMDB.DB()
+	database.Redis = xredis.NewRedis(r)
+	db, err := database.ORMDB.DB()
 	if err != nil {
 		common.Error("ORMDB get DB failed, err=%s", err.Error())
 		panic("ORMDB get DB failed")
 	}
 	//DB = &CMySQL{CDatabase{db}}
-	DB = &CMySQL{}
-	DB.SetDB(db)
+	database.DB = &CMySQL{}
+	database.DB.SetDB(db)
 
 	// 初始化创建数据表
-	model.InitTable(ORMDB)
+	model.InitTable(database.ORMDB)
 
-	common.NewIDWorker(Redis.GetWorkerID())
+	common.NewIDWorker(database.Redis.GetWorkerID())
 	return
 }
 
@@ -76,7 +76,7 @@ func GormNew(dataSourceName string, maxOpenConns int, maxIdleConns int) (gormDb 
 	}
 
 	//非生成环境打印所有sql
-	if Conf.SetupMode != "prod" {
+	if conf.Conf.SetupMode != "prod" {
 		gormDb.Logger = gormDb.Logger.LogMode(logger.Info)
 	}
 
@@ -87,7 +87,7 @@ func GormNew(dataSourceName string, maxOpenConns int, maxIdleConns int) (gormDb 
 	return
 }
 
-type CMySQL struct{ CDatabase }
+type CMySQL struct{ database.CDatabase }
 
 //var DB CMysqlDB
 
