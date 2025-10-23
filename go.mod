@@ -19,7 +19,6 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/ip2location/ip2location-go v8.3.0+incompatible
 	github.com/pkg/errors v0.9.1
-	github.com/redis/go-redis/v9 v9.14.0
 	github.com/streadway/amqp v1.1.0
 	github.com/zishang520/engine.io/v2 v2.5.0
 	github.com/zishang520/socket.io-go-redis v1.3.0
@@ -27,7 +26,6 @@ require (
 	golang.org/x/text v0.29.0
 	golang.org/x/time v0.13.0
 	google.golang.org/api v0.252.0
-	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gorm v1.25.12
 //	github.com/lib/pq latest
@@ -95,6 +93,7 @@ require (
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.53.0 // indirect
+	github.com/redis/go-redis/v9 v9.14.0 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.5.0 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
@@ -131,4 +130,5 @@ require (
 	google.golang.org/grpc v1.75.1 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -10,7 +10,7 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"common/logs"
+	"github.com/dahaipublic/common/logs"
 )
 
 /*

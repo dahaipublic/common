@@ -1,17 +1,13 @@
 package conf
 
 import (
-	"common/xstr"
 	"fmt"
+	"github.com/dahaipublic/common/xstr"
 
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
-
-	"gopkg.in/yaml.v3"
-
-	. "common"
 )
 
 var (

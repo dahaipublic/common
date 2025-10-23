@@ -1,7 +1,7 @@
 package util
 
 import (
-	"common/model"
+	"github.com/dahaipublic/common/model"
 	"sort"
 	"strconv"
 	"strings"

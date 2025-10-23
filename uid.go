@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	"common/base58"
+	"github.com/dahaipublic/common/base58"
 )
 
 const (

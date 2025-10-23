@@ -8,10 +8,9 @@ import (
 
 	"gorm.io/gorm"
 
-	. "common"
-	//	. "common/conf"
-	"common/model"
-	"common/xstr"
+	//	. "github.com/dahaipublic/common/conf"
+	"github.com/dahaipublic/common/model"
+	"github.com/dahaipublic/common/xstr"
 )
 
 type CBaseMatchMgr struct {

@@ -1,9 +1,8 @@
 package nami
 
 import (
-	. "common/database"
-	"common/model"
 	"fmt"
+	"github.com/dahaipublic/common/model"
 	"strconv"
 	"strings"
 	"time"

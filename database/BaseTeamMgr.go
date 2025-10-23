@@ -1,8 +1,7 @@
 package database
 
 import (
-	. "common"
-	"common/model"
+	"github.com/dahaipublic/common/model"
 )
 
 type CBaseTeamMgr struct{}

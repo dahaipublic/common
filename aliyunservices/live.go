@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"path"
 
-	"common/conf"
+	"github.com/dahaipublic/common/conf"
 	"mime/multipart"
 	"strings"
 	"time"
