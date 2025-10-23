@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	. "common"
+	"common"
 )
 
 /*
@@ -235,7 +235,7 @@ func (this *CSQLWhere) getWhereStr() string {
 	num := strings.Count(whereStr, "?")
 	if num != len(this.args) {
 		msg := fmt.Sprintf("CSQLWhere.getWhereStr err, num=%d, argsNum=%d", num, len(this.args))
-		Warning(msg)
+		common.Warning(msg)
 		panic(fmt.Errorf(msg))
 	}
 

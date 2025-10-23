@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	//	"fmt"
 
-	. "common"
+	"common"
 )
 
 var DB IDatabase
@@ -25,7 +25,7 @@ func (this *CDatabase) SetDB(db *sql.DB) { this.db = db }
 func (this *CDatabase) IsOpen() bool {
 	err := this.db.Ping()
 	if err != nil {
-		Error("database unreachable! %s", err.Error())
+		common.Error("database unreachable! %s", err.Error())
 		return false
 	}
 
@@ -39,7 +39,7 @@ func (this *CDatabase) Count(countSQL string, countArgs ...interface{}) int {
 	row := this.db.QueryRow(countSQL, countArgs...)
 	c := 0
 	if err := row.Scan(&c); err != nil {
-		Warning("CDatabase.Count err=%s", err.Error())
+		common.Warning("CDatabase.Count err=%s", err.Error())
 		return 0
 	}
 

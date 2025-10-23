@@ -2,13 +2,13 @@ package database
 
 import (
 	//. "common"
-	//	. "github.com/dahaipublic/common/conf"
+	//	"common/conf"
 
-	//xmysql "github.com/dahaipublic/common/database/mysql"
-	xredis "github.com/dahaipublic/common/database/redis"
+	//xmysql "common/database/mysql"
+	xredis "common/database/redis"
 
 	"gorm.io/gorm"
-	//	"github.com/dahaipublic/common/model"
+	//	"common/model"
 	//"fmt"
 )
 

@@ -2,7 +2,7 @@ package util
 
 import (
 	"bytes"
-	. "common"
+	"common"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -21,7 +21,7 @@ type BukaSmsRequest struct {
 	Content string `json:"content"`
 }
 
-func SendSmsBuka(smsRequest BukaSmsRequest) (errCode EErrCode) {
+func SendSmsBuka(smsRequest BukaSmsRequest) (errCode common.EErrCode) {
 	baseUrl := "https://api.laaffic.com/v3"
 
 	url := baseUrl + "/sendSms"
@@ -46,14 +46,14 @@ func SendSmsBuka(smsRequest BukaSmsRequest) (errCode EErrCode) {
 
 	respBody, statusCode, err := doPostJson(url, headers, body)
 	if err != nil {
-		errCode = Err_Param
+		errCode = common.Err_Param
 		return
 	}
 
 	if statusCode == http.StatusOK {
 		fmt.Println(string(respBody))
 	} else {
-		errCode = Err_RemoteCall
+		errCode = common.Err_RemoteCall
 	}
 	return
 }

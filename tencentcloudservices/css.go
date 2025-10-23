@@ -1,7 +1,7 @@
 package tencentcloudservices
 
 // import (
-// 	"github.com/dahaipublic/common/conf"
+// 	"common/conf"
 // 	"crypto/md5"
 // 	"fmt"
 // 	"strconv"

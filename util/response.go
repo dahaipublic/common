@@ -1,7 +1,7 @@
 package util
 
 import (
-	. "common"
+	"common"
 	"net/http"
 	"strings"
 
@@ -25,14 +25,14 @@ import (
 // 	Total   int64       `json:"total"`
 // }
 
-type Response = THttpResp
+type Response = common.THttpResp
 
 // json
 func Success(c *gin.Context, data interface{}) {
 	accLan := c.Request.Header.Get("Accept-Language")
-	c.JSON(http.StatusOK, THttpResp{
-		Code: No_Error,
-		Msg:  GetErrStr(accLan, EErrCode(0)),
+	c.JSON(http.StatusOK, common.THttpResp{
+		Code: common.No_Error,
+		Msg:  common.GetErrStr(accLan, common.EErrCode(0)),
 		Data: data,
 	})
 	return
@@ -41,10 +41,10 @@ func Success(c *gin.Context, data interface{}) {
 // json分页带总数
 
 func SuccessCount[T any](c *gin.Context, data []T, count, page, limit int64) {
-	c.JSON(http.StatusOK, &THttpResp{
-		Code: No_Error,
+	c.JSON(http.StatusOK, &common.THttpResp{
+		Code: common.No_Error,
 		Msg:  "",
-		Data: &TPageXX[T]{
+		Data: &common.TPageXX[T]{
 			Total: int32(count),
 			List:  data,
 		},
@@ -57,7 +57,7 @@ func SuccessCount[T any](c *gin.Context, data []T, count, page, limit int64) {
 // 	Total int32         `json:"total"`
 // }
 
-// type TPageXX[T any] struct {
+// type common.TPageXX[T any] struct {
 // 	List  []*T  `json:"list"`
 // 	Total int32 `json:"total"`
 // }
@@ -67,37 +67,37 @@ func SuccessCount[T any](c *gin.Context, data []T, count, page, limit int64) {
 
 // 	// c.Writer.WriteHeader(200)
 // 	// c.Writer.Header().Add("Content-Type", "application/json; charset=utf-8")
-// 	// c.Writer.WriteString(string(JsonResult.Get(EErrCode(code))))
+// 	// c.Writer.WriteString(string(common.JsonResult.Get(common.EErrCode(code))))
 // 	accLan := c.Request.Header.Get("Accept-Language")
 // 	msgStr := strings.Join(msg, " ")
 // 	// 使用 JSON 响应； 参数数据的话返回那个参数错误了 fullMsg
 // 	c.JSON(http.StatusOK, gin.H{
 // 		"code":      code,
-// 		"msg":       GetErrStr(accLan, EErrCode(code)),
+// 		"msg":       common.GetErrStr(accLan, common.EErrCode(code)),
 // 		"extraInfo": msgStr,
 // 	})
 // 	return
 // }
 
-func RespCodeResult(c *gin.Context, errCode EErrCode, msg ...string) {
+func RespCodeResult(c *gin.Context, errCode common.EErrCode, msg ...string) {
 
 	accLan := c.Request.Header.Get("Accept-Language")
 	if len(msg) == 0 {
 		c.Writer.Header().Add("Content-Type", "application/json; charset=utf-8")
-		c.Writer.Write(JsonResult.Get(accLan, errCode))
+		c.Writer.Write(common.JsonResult.Get(accLan, errCode))
 	} else {
 		msgStr := strings.Join(msg, " ")
 		c.JSON(http.StatusOK, gin.H{
 			"code":      errCode,
-			"msg":       GetErrStr(accLan, EErrCode(errCode)),
+			"msg":       common.GetErrStr(accLan, common.EErrCode(errCode)),
 			"extraInfo": msgStr,
 		})
 	}
 }
 
-func MakeCodeResp(accLan string, errCode EErrCode, msg ...string) (rsp THttpResp) {
+func MakeCodeResp(accLan string, errCode common.EErrCode, msg ...string) (rsp common.THttpResp) {
 	rsp.Code = errCode
-	rsp.Msg = GetErrStr(accLan, errCode)
+	rsp.Msg = common.GetErrStr(accLan, common.EErrCode(errCode))
 	if len(msg) != 0 {
 		rsp.ExtraInfo = strings.Join(msg, " ")
 	}
@@ -107,25 +107,25 @@ func MakeCodeResp(accLan string, errCode EErrCode, msg ...string) (rsp THttpResp
 func RespDataResult(c *gin.Context, data interface{}) {
 	accLan := c.Request.Header.Get("Accept-Language")
 	c.JSON(http.StatusOK, gin.H{
-		"code": No_Error,
-		"msg":  GetErrStr(accLan, EErrCode(No_Error)),
+		"code": common.No_Error,
+		"msg":  common.GetErrStr(accLan, common.EErrCode(common.No_Error)),
 		"data": data,
 	})
 }
 
-func RespCommonResult(c *gin.Context, data interface{}, errCode EErrCode) {
-	if errCode != No_Error {
+func RespCommonResult(c *gin.Context, data interface{}, errCode common.EErrCode) {
+	if errCode != common.No_Error {
 		RespCodeResult(c, errCode)
 	} else {
 		RespDataResult(c, data)
 	}
 }
 
-func RespCommonPageResult[T any](c *gin.Context, data []T, count int64, errCode EErrCode) {
-	if errCode != No_Error {
+func RespCommonPageResult[T any](c *gin.Context, data []T, count int64, errCode common.EErrCode) {
+	if errCode != common.No_Error {
 		RespCodeResult(c, errCode)
 	} else {
-		page := &TPageXX[T]{
+		page := &common.TPageXX[T]{
 			Total: int32(count),
 			List:  data,
 		}
@@ -133,9 +133,9 @@ func RespCommonPageResult[T any](c *gin.Context, data []T, count int64, errCode 
 	}
 }
 
-func GetLanIDByHttpHead(c *gin.Context) ELanDef {
+func GetLanIDByHttpHead(c *gin.Context) common.ELanDef {
 	accLan := c.Request.Header.Get("Accept-Language")
-	return GetLanID(accLan)
+	return common.GetLanID(accLan)
 }
 
 // 获取userID

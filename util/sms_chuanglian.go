@@ -2,7 +2,7 @@ package util
 
 import (
 	"bytes"
-	. "common"
+	"common"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -21,7 +21,7 @@ type SmsSendRequest struct {
 	Msg      string `json:"msg"`
 }
 
-func SendSmsCL(smsRequest SmsSendRequest) (_err EErrCode) {
+func SendSmsCL(smsRequest SmsSendRequest) (_err common.EErrCode) {
 	//password := smsRequest.Password
 	//password := "j1HVgr313Of24f"
 	nonce := fmt.Sprintf("%d", time.Now().UnixMilli())
@@ -34,7 +34,7 @@ func SendSmsCL(smsRequest SmsSendRequest) (_err EErrCode) {
 	// 构造请求体
 	requestBody, err := json.Marshal(smsRequest)
 	if err != nil {
-		return Err_Param
+		return common.Err_Param
 	}
 
 	client := &http.Client{
@@ -43,7 +43,7 @@ func SendSmsCL(smsRequest SmsSendRequest) (_err EErrCode) {
 
 	req, err := http.NewRequest("POST", "https://sgap.253.com/send/sms", bytes.NewBuffer(requestBody))
 	if err != nil {
-		return Err_RemoteCall
+		return common.Err_RemoteCall
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("nonce", nonce)
@@ -51,7 +51,7 @@ func SendSmsCL(smsRequest SmsSendRequest) (_err EErrCode) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return Err_RemoteCall
+		return common.Err_RemoteCall
 	}
 	defer resp.Body.Close()
 
@@ -66,7 +66,7 @@ func SendSmsCL(smsRequest SmsSendRequest) (_err EErrCode) {
 			fmt.Println("messageId =", data["messageId"])
 		}
 	} else {
-		return Err_RemoteCall
+		return common.Err_RemoteCall
 	}
 	return
 }

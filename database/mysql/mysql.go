@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	. "common"
+	"common"
 	. "common/conf"
 	. "common/database"
 	xredis "common/database/redis"
@@ -32,7 +32,7 @@ func InitDB() {
 	Redis = xredis.NewRedis(r)
 	db, err := ORMDB.DB()
 	if err != nil {
-		Error("ORMDB get DB failed, err=%s", err.Error())
+		common.Error("ORMDB get DB failed, err=%s", err.Error())
 		panic("ORMDB get DB failed")
 	}
 	//DB = &CMySQL{CDatabase{db}}
@@ -42,7 +42,7 @@ func InitDB() {
 	// 初始化创建数据表
 	model.InitTable(ORMDB)
 
-	NewIDWorker(Redis.GetWorkerID())
+	common.NewIDWorker(Redis.GetWorkerID())
 	return
 }
 
@@ -113,7 +113,7 @@ func MakeMysqlDsn(dbHost, dbPort, dbUser, dbPwd, dbName, charset string) string 
 func (this *CMySQL) Open(dsn string, maxOpenConns, maxIdleConns int) bool {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		Error("postgres connecting fail: %s\n", err.Error())
+		common.Error("postgres connecting fail: %s\n", err.Error())
 		return false
 	}
 

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"common"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -8,15 +9,15 @@ import (
 
 	"gorm.io/gorm"
 
-	//	. "github.com/dahaipublic/common/conf"
-	"github.com/dahaipublic/common/model"
-	"github.com/dahaipublic/common/xstr"
+	//	. "common/conf"
+	"common/model"
+	"common/xstr"
 )
 
 type CBaseMatchMgr struct {
 }
 
-func (this *CBaseMatchMgr) GetMatchByID(id uint64, sportsType int8) (data model.MatchAdmin, errCode EErrCode) {
+func (this *CBaseMatchMgr) GetMatchByID(id uint64, sportsType int8) (data model.MatchAdmin, errCode common.EErrCode) {
 	if sportsType == model.MatchTypeFootball {
 		footballMatch, _ := this.GetFootballMatchByID(id)
 		data = footballMatch.MatchAdmin
@@ -28,11 +29,11 @@ func (this *CBaseMatchMgr) GetMatchByID(id uint64, sportsType int8) (data model.
 }
 
 // 通过id获取数据
-func (this *CBaseMatchMgr) GetBasketballMatchByID(id uint64) (data model.BasketballMatchAdmin, errCode EErrCode) {
+func (this *CBaseMatchMgr) GetBasketballMatchByID(id uint64) (data model.BasketballMatchAdmin, errCode common.EErrCode) {
 
 	err := ORMDB.Model(&model.BasketballMatchAdmin{}).Where("id = ?", id).First(&data).Error
 	if err != nil {
-		errCode = Err_DB
+		errCode = common.Err_DB
 		return
 	}
 	// jsonVal, _ := json.Marshal(data)
@@ -42,7 +43,7 @@ func (this *CBaseMatchMgr) GetBasketballMatchByID(id uint64) (data model.Basketb
 }
 
 // 通过id获取数据
-func (this *CBaseMatchMgr) GetFootballMatchByID(id uint64) (data model.FootballMatchAdmin, errCode EErrCode) {
+func (this *CBaseMatchMgr) GetFootballMatchByID(id uint64) (data model.FootballMatchAdmin, errCode common.EErrCode) {
 	// key := fmt.Sprintf(model.RedisKeyMatchID, id)
 	// res := Redis.GetRedis().Get(key)
 	// if res.Err() == nil {
@@ -52,7 +53,7 @@ func (this *CBaseMatchMgr) GetFootballMatchByID(id uint64) (data model.FootballM
 	// } else {
 	err := ORMDB.Model(&model.FootballMatchAdmin{}).Where("id = ?", id).First(&data)
 	if err != nil {
-		errCode = Err_DB
+		errCode = common.Err_DB
 		return
 	}
 	// jsonVal, _ := json.Marshal(data)
@@ -61,17 +62,17 @@ func (this *CBaseMatchMgr) GetFootballMatchByID(id uint64) (data model.FootballM
 	return
 }
 
-func (this *CBaseMatchMgr) GetMatchInfoByMatchID(matchID uint64) (data model.MatchInfo, errCode EErrCode) {
+func (this *CBaseMatchMgr) GetMatchInfoByMatchID(matchID uint64) (data model.MatchInfo, errCode common.EErrCode) {
 	key := fmt.Sprintf(model.RedisKeyMatchInfoMatchID, matchID)
 	res := Redis.GetRedis().Get(key)
 	if res.Err() == nil {
 		err := json.Unmarshal(xstr.String2Bytes(res.Val()), &data)
-		JsonErrTest(err, &errCode)
+		common.JsonErrTest(err, &errCode)
 		return
 	} else {
 		err := ORMDB.Model(&model.MatchInfo{}).Where("match_id = ?", matchID).Order("id desc").First(&data).Error
 		if err != nil {
-			errCode = Err_DB
+			errCode = common.Err_DB
 			return
 		}
 
@@ -93,19 +94,19 @@ func (this *CBaseMatchMgr) MatchStatusNotStartOrCompletion(sportsType int8) (mat
 }
 
 // 获取比赛直播数据
-func (this *CBaseMatchMgr) GetMatchLive(matchID uint64) (rsp interface{}, errCode EErrCode) {
+func (this *CBaseMatchMgr) GetMatchLive(matchID uint64) (rsp interface{}, errCode common.EErrCode) {
 	key := fmt.Sprintf(model.RedisKeyMatchLive, matchID)
 	res := Redis.GetRedis().Get(key)
 	if res.Err() == nil {
 		err := json.Unmarshal(xstr.String2Bytes(res.Val()), &rsp)
-		JsonErrTest(err, &errCode)
+		common.JsonErrTest(err, &errCode)
 		return
 	}
 	matchInfo, _ := this.GetMatchInfoByMatchID(matchID)
 	if matchInfo.Live != "" {
 		err := json.Unmarshal([]byte(matchInfo.Live), &rsp)
 		if err != nil {
-			errCode = Err_JsonDecode
+			errCode = common.Err_JsonDecode
 			return
 		}
 
@@ -163,10 +164,10 @@ func (this *CBaseMatchMgr) GetMatchLive(matchID uint64) (rsp interface{}, errCod
 // }
 
 // 创建
-func (this *CBaseMatchMgr) MatchAnnouncementCreate(tx *gorm.DB, matchAnnouncement *model.MatchAnnouncement) (errCode EErrCode) {
+func (this *CBaseMatchMgr) MatchAnnouncementCreate(tx *gorm.DB, matchAnnouncement *model.MatchAnnouncement) (errCode common.EErrCode) {
 	err := tx.Model(&model.MatchAnnouncement{}).Create(&matchAnnouncement).Error
 	if err != nil {
-		errCode = Err_DB
+		errCode = common.Err_DB
 		return
 	}
 
@@ -175,17 +176,17 @@ func (this *CBaseMatchMgr) MatchAnnouncementCreate(tx *gorm.DB, matchAnnouncemen
 	return
 }
 
-func (this *CBaseMatchMgr) GetMatchAnnouncementByMatchID(matchID uint64) (rsp model.MatchAnnouncement, errCode EErrCode) {
+func (this *CBaseMatchMgr) GetMatchAnnouncementByMatchID(matchID uint64) (rsp model.MatchAnnouncement, errCode common.EErrCode) {
 	key := fmt.Sprintf(model.RedisKeyMatchAnnouncementMatchID, matchID)
 	res := Redis.GetRedis().Get(key)
 	if res.Err() == nil {
 		err := json.Unmarshal(xstr.String2Bytes(res.Val()), &rsp)
-		JsonErrTest(err, &errCode)
+		common.JsonErrTest(err, &errCode)
 		return
 	} else {
 		err := ORMDB.Model(&model.MatchAnnouncement{}).Where("match_id = ?", matchID).Order("id desc").First(&rsp).Error
 		if err != nil {
-			errCode = Err_DB
+			errCode = common.Err_DB
 			return
 		}
 		jsonVal, _ := json.Marshal(rsp)
@@ -206,13 +207,13 @@ type BasketballMatchLive struct {
 }
 
 // 获取比赛阵容和统计数据
-func (this *CBaseMatchMgr) GetMatchLineup(matchID uint64, sportsType int8) (rsp interface{}, errCode EErrCode) {
+func (this *CBaseMatchMgr) GetMatchLineup(matchID uint64, sportsType int8) (rsp interface{}, errCode common.EErrCode) {
 	if sportsType == model.MatchTypeFootball {
 		key := fmt.Sprintf(model.RedisKeyFootballMatchLineup, matchID)
 		res := Redis.GetRedis().Get(key)
 		if res.Err() == nil {
 			err := json.Unmarshal(xstr.String2Bytes(res.Val()), &rsp)
-			JsonErrTest(err, &errCode)
+			common.JsonErrTest(err, &errCode)
 			return
 		}
 		matchInfo, _ := this.GetMatchInfoByMatchID(matchID)
@@ -225,7 +226,7 @@ func (this *CBaseMatchMgr) GetMatchLineup(matchID uint64, sportsType int8) (rsp 
 		res := Redis.GetRedis().Get(key)
 		if res.Err() == nil {
 			err := json.Unmarshal(xstr.String2Bytes(res.Val()), &rsp)
-			JsonErrTest(err, &errCode)
+			common.JsonErrTest(err, &errCode)
 			return
 		}
 		matchInfo, _ := this.GetMatchInfoByMatchID(matchID)
@@ -241,10 +242,10 @@ func (this *CBaseMatchMgr) GetMatchLineup(matchID uint64, sportsType int8) (rsp 
 }
 
 // 修改
-func (this *CBaseMatchMgr) MatchInfoUpdateDB(tx *gorm.DB, matchID uint64, updateMap map[string]interface{}) (errCode EErrCode) {
+func (this *CBaseMatchMgr) MatchInfoUpdateDB(tx *gorm.DB, matchID uint64, updateMap map[string]interface{}) (errCode common.EErrCode) {
 	err := tx.Model(&model.MatchInfo{}).Where("match_id = ?", matchID).Updates(updateMap).Error
 	if err != nil {
-		errCode = Err_DB
+		errCode = common.Err_DB
 		return
 	}
 
@@ -253,9 +254,9 @@ func (this *CBaseMatchMgr) MatchInfoUpdateDB(tx *gorm.DB, matchID uint64, update
 }
 
 // 删除缓存
-func (this *CBaseMatchMgr) MatchInfoDeleteCache(matchID uint64) (errCode EErrCode) {
+func (this *CBaseMatchMgr) MatchInfoDeleteCache(matchID uint64) (errCode common.EErrCode) {
 	res := Redis.GetRedis().Del(fmt.Sprintf(model.RedisKeyMatchInfoMatchID, matchID))
-	RedisErrTest(res.Err(), &errCode)
+	common.RedisErrTest(res.Err(), &errCode)
 	// if res.Err() != nil {
 	// 	err = res.Err()
 	// 	return

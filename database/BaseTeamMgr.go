@@ -1,7 +1,8 @@
 package database
 
 import (
-	"github.com/dahaipublic/common/model"
+	"common"
+	"common/model"
 )
 
 type CBaseTeamMgr struct{}
@@ -23,12 +24,12 @@ func (this *CBaseTeamMgr) GetTeamByID(id uint64, sportsType int8) (data model.Te
 }
 
 // 通过id获取数据
-func (this *CBaseTeamMgr) GetTeamNameAndLogByID(id uint64, sportsType int8, lanID ELanDef) (name, shortName, logo string) {
+func (this *CBaseTeamMgr) GetTeamNameAndLogByID(id uint64, sportsType int8, lanID common.ELanDef) (name, shortName, logo string) {
 	data, _ := this.GetTeamByID(id, sportsType)
 	logo = data.Logo
 	switch lanID {
 	//case ELan_zh_CN:
-	case ELan_en_US:
+	case common.ELan_en_US:
 
 		name = data.NameEn
 		if data.ShortNameEn != "" {
@@ -36,7 +37,7 @@ func (this *CBaseTeamMgr) GetTeamNameAndLogByID(id uint64, sportsType int8, lanI
 		} else {
 			shortName = data.NameEn
 		}
-	case ELan_tr_TR:
+	case common.ELan_tr_TR:
 		if data.NameTr == "" {
 			name = data.NameEn
 		} else {
@@ -50,7 +51,7 @@ func (this *CBaseTeamMgr) GetTeamNameAndLogByID(id uint64, sportsType int8, lanI
 			shortName = data.NameEn
 		}
 
-	case ELan_ar_EG:
+	case common.ELan_ar_EG:
 		if data.NameAr == "" {
 			name = data.NameEn
 
@@ -75,7 +76,7 @@ func (this *CBaseTeamMgr) GetTeamNameAndLogByID(id uint64, sportsType int8, lanI
 }
 
 // 通过id获取数据
-func (this *CBaseTeamMgr) GetBasketballTeamByID(id uint64) (data model.BasketballTeam, errCode EErrCode) {
+func (this *CBaseTeamMgr) GetBasketballTeamByID(id uint64) (data model.BasketballTeam, errCode common.EErrCode) {
 	//key := fmt.Sprintf(model.RedisKeyBasketballTeamID, id)
 	//res := Redis.GetRedis().Get(key)
 	//if res.Err() == nil {
@@ -90,7 +91,7 @@ func (this *CBaseTeamMgr) GetBasketballTeamByID(id uint64) (data model.Basketbal
 	return
 }
 
-func (this *CBaseTeamMgr) GetFootballTeamByID(id uint64) (data model.FootballTeam, errCode EErrCode) {
+func (this *CBaseTeamMgr) GetFootballTeamByID(id uint64) (data model.FootballTeam, errCode common.EErrCode) {
 
 	ORMDB.Model(&model.FootballTeam{}).Where("id = ?", id).First(&data)
 	return

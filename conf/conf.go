@@ -1,8 +1,8 @@
 package conf
 
 import (
+	"common/xstr"
 	"fmt"
-	"github.com/dahaipublic/common/xstr"
 
 	"os"
 	"path/filepath"

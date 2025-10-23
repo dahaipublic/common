@@ -10,17 +10,18 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dahaipublic/common/model"
-	"github.com/dahaipublic/common/util"
-	"github.com/dahaipublic/common/xstr"
+	"common"
+	"common/model"
+	"common/util"
+	"common/xstr"
 
 	"gorm.io/gorm"
 
-	xtime "github.com/dahaipublic/common/time"
+	xtime "common/time"
 )
 
 // 通过设备id获取用户id
-func GetUserIDByDeviceID(deviceID string) (userID uint64, errCode EErrCode) {
+func GetUserIDByDeviceID(deviceID string) (userID uint64, errCode common.EErrCode) {
 	if deviceID == "" {
 		return
 	}
@@ -30,7 +31,7 @@ func GetUserIDByDeviceID(deviceID string) (userID uint64, errCode EErrCode) {
 }
 
 // 通过token获取用户id
-func GetUserIDByToken(token string) (userID uint64, errCode EErrCode) {
+func GetUserIDByToken(token string) (userID uint64, errCode common.EErrCode) {
 	userID, errCode = BaseUserMgr.GetUserIDByToken(token)
 	return
 }
@@ -38,17 +39,17 @@ func GetUserIDByToken(token string) (userID uint64, errCode EErrCode) {
 type CBaseUserMgr struct{}
 
 // 通过id获取数据
-func (this *CBaseUserMgr) GetUserByID(userID uint64) (data model.User, errCode EErrCode) {
+func (this *CBaseUserMgr) GetUserByID(userID uint64) (data model.User, errCode common.EErrCode) {
 	key := fmt.Sprintf(model.RedisKeyUserID, userID)
 	res := Redis.GetRedis().Get(key)
 	if res.Err() == nil {
 		err := json.Unmarshal(xstr.String2Bytes(res.Val()), &data)
-		JsonErrTest(err, &errCode)
+		common.JsonErrTest(err, &errCode)
 		return
 	} else {
 		err := ORMDB.Model(&model.User{}).Where("id = ?", userID).First(&data).Error
 		if err != nil {
-			errCode = Err_DB
+			errCode = common.Err_DB
 			return
 		}
 		jsonVal, _ := json.Marshal(data)
@@ -58,7 +59,7 @@ func (this *CBaseUserMgr) GetUserByID(userID uint64) (data model.User, errCode E
 }
 
 // 通过设备id获取用户信息
-func (this *CBaseUserMgr) GetUserByDeviceID(deviceID string) (user model.User, errCode EErrCode) {
+func (this *CBaseUserMgr) GetUserByDeviceID(deviceID string) (user model.User, errCode common.EErrCode) {
 	var id uint64
 	//先获取用户id
 	key := fmt.Sprintf(model.RedisKeyUserDeviceIDGetID, deviceID)
@@ -68,14 +69,14 @@ func (this *CBaseUserMgr) GetUserByDeviceID(deviceID string) (user model.User, e
 	} else {
 		err := ORMDB.Model(&model.User{}).Where("device_id = ? ", deviceID).Select("id").First(&id).Error
 		if err != nil {
-			errCode = Err_DB
+			errCode = common.Err_DB
 			return
 		}
 		Redis.GetRedis().Set(key, fmt.Sprintf("%d", id), time.Second*model.RedisExpiration)
 	}
 	//再获取用户信息
 	user, errCode = this.GetUserByID(id)
-	if errCode != No_Error {
+	if errCode != common.No_Error {
 		return
 	}
 	return
@@ -91,25 +92,25 @@ func GenerateUserCode() string {
 }
 
 // GenerateSmsCode 生成 6 位短信验证码
-func GenerateSmsCode() (string, EErrCode) {
+func GenerateSmsCode() (string, common.EErrCode) {
 	max := big.NewInt(1000000) // [0, 1000000)
 	n, err := rand.Int(rand.Reader, max)
 	if err != nil {
-		return "", Err_Unknown
+		return "", common.Err_Unknown
 	}
-	return fmt.Sprintf("%06d", n.Int64()), No_Error
+	return fmt.Sprintf("%06d", n.Int64()), common.No_Error
 }
 
 // 通过设备id获取用户信息
-func (this *CBaseUserMgr) GetUserIDByDeviceID(deviceID string) (userID uint64, errCode EErrCode) {
+func (this *CBaseUserMgr) GetUserIDByDeviceID(deviceID string) (userID uint64, errCode common.EErrCode) {
 	user, userErr := this.GetUserByDeviceID(deviceID)
-	if userErr == No_Error {
+	if userErr == common.No_Error {
 		userID = user.ID
 		return
 	}
 	tx := ORMDB.Begin()
 	defer func() {
-		if errCode != No_Error {
+		if errCode != common.No_Error {
 			tx.Rollback()
 			return
 		}
@@ -126,7 +127,7 @@ func (this *CBaseUserMgr) GetUserIDByDeviceID(deviceID string) (userID uint64, e
 	user.DeviceID = deviceID
 	user.RoleID = 1
 	err := this.UserCreate(tx, &user)
-	if err != No_Error {
+	if err != common.No_Error {
 		return
 	}
 	userID = user.ID
@@ -134,7 +135,7 @@ func (this *CBaseUserMgr) GetUserIDByDeviceID(deviceID string) (userID uint64, e
 }
 
 // 通过token获取用户信息
-func (this *CBaseUserMgr) GetUserIDByToken(token string) (userID uint64, errCode EErrCode) {
+func (this *CBaseUserMgr) GetUserIDByToken(token string) (userID uint64, errCode common.EErrCode) {
 	res := Redis.RedisGet(fmt.Sprintf(model.RedisKeyUserToken, token))
 	if res == "" {
 		return
@@ -146,7 +147,7 @@ func (this *CBaseUserMgr) GetUserIDByToken(token string) (userID uint64, errCode
 	if redisRes == "" {
 		tx := ORMDB.Begin()
 		defer func() {
-			if errCode != No_Error {
+			if errCode != common.No_Error {
 				tx.Rollback()
 				return
 			}
@@ -155,11 +156,11 @@ func (this *CBaseUserMgr) GetUserIDByToken(token string) (userID uint64, errCode
 		}()
 		var user model.User
 		user, err := this.GetUserByID(userID)
-		if err != No_Error {
+		if err != common.No_Error {
 			return
 		}
 		err = this.UserExperienceTask(tx, user, 0, model.UserExperienceTypeDailyOnline)
-		if err != No_Error {
+		if err != common.No_Error {
 			return
 		}
 	}
@@ -167,52 +168,52 @@ func (this *CBaseUserMgr) GetUserIDByToken(token string) (userID uint64, errCode
 }
 
 // 创建用户
-func (this *CBaseUserMgr) UserCreate(tx *gorm.DB, data *model.User) (errCode EErrCode) {
+func (this *CBaseUserMgr) UserCreate(tx *gorm.DB, data *model.User) (errCode common.EErrCode) {
 	err := tx.Model(&model.User{}).Create(&data).Error
 	if err != nil {
 
-		errCode = Err_DB
+		errCode = common.Err_DB
 		return
 	}
 	return
 }
 
 // 修改用户信息
-func (this *CBaseUserMgr) UserUpdateDB(tx *gorm.DB, id uint64, updateMap map[string]interface{}) (errCode EErrCode) {
+func (this *CBaseUserMgr) UserUpdateDB(tx *gorm.DB, id uint64, updateMap map[string]interface{}) (errCode common.EErrCode) {
 	err := tx.Model(&model.User{}).Where("id = ?", id).Updates(updateMap).Error
 	if err != nil {
-		errCode = Err_DB
+		errCode = common.Err_DB
 		return
 	}
 	//删除缓存
 	errorCode := this.DeleteUserCache(id)
-	if errorCode != No_Error {
+	if errorCode != common.No_Error {
 		return
 	}
 	return
 }
 
 // 删除用户信息缓存
-func (this *CBaseUserMgr) DeleteUserCache(userID uint64) (errCode EErrCode) {
+func (this *CBaseUserMgr) DeleteUserCache(userID uint64) (errCode common.EErrCode) {
 	res := Redis.GetRedis().Del(fmt.Sprintf(model.RedisKeyUserID, userID))
 	if res.Err() != nil {
-		errCode = Err_DB
+		errCode = common.Err_DB
 		return
 	}
 	return
 }
 
-func (this *CBaseUserMgr) GetUserRoleByID(id uint64) (data model.UserRole, errCode EErrCode) {
+func (this *CBaseUserMgr) GetUserRoleByID(id uint64) (data model.UserRole, errCode common.EErrCode) {
 	key := fmt.Sprintf(model.RedisKeyUserRoleID, id)
 	res := Redis.GetRedis().Get(key)
 	if res.Err() == nil {
 		err := json.Unmarshal(xstr.String2Bytes(res.Val()), &data)
-		JsonErrTest(err, &errCode)
+		common.JsonErrTest(err, &errCode)
 		return
 	} else {
 		err := ORMDB.Model(&model.UserRole{}).Where("id = ?", id).First(&data).Error
 		if err != nil {
-			errCode = Err_DB
+			errCode = common.Err_DB
 			return
 		}
 		jsonVal, _ := json.Marshal(data)
@@ -221,17 +222,17 @@ func (this *CBaseUserMgr) GetUserRoleByID(id uint64) (data model.UserRole, errCo
 	return
 }
 
-func (this *CBaseUserMgr) GetUserRoleByLevel(level int64) (data model.UserRole, errCode EErrCode) {
+func (this *CBaseUserMgr) GetUserRoleByLevel(level int64) (data model.UserRole, errCode common.EErrCode) {
 	key := fmt.Sprintf(model.RedisKeyUserRoleLevel, level)
 	res := Redis.GetRedis().Get(key)
 	if res.Err() == nil {
 		err := json.Unmarshal(xstr.String2Bytes(res.Val()), &data)
-		JsonErrTest(err, &errCode)
+		common.JsonErrTest(err, &errCode)
 		return
 	} else {
 		err := ORMDB.Model(&model.UserRole{}).Where("level = ?", level).First(&data).Error
 		if err != nil {
-			errCode = Err_DB
+			errCode = common.Err_DB
 			return
 		}
 		jsonVal, _ := json.Marshal(data)
@@ -240,26 +241,26 @@ func (this *CBaseUserMgr) GetUserRoleByLevel(level int64) (data model.UserRole, 
 	return
 }
 
-func (this *CBaseUserMgr) CreateUserRoleLog(tx *gorm.DB, data *model.UserRoleLog) (errCode EErrCode) {
+func (this *CBaseUserMgr) CreateUserRoleLog(tx *gorm.DB, data *model.UserRoleLog) (errCode common.EErrCode) {
 	err := tx.Model(&model.UserRoleLog{}).Create(&data).Error
 	if err != nil {
-		errCode = Err_DB
+		errCode = common.Err_DB
 		return
 	}
 	return
 }
 
-func (this *CBaseUserMgr) GetUserLevelByLevel(level int64) (data model.UserLevel, errCode EErrCode) {
+func (this *CBaseUserMgr) GetUserLevelByLevel(level int64) (data model.UserLevel, errCode common.EErrCode) {
 	key := fmt.Sprintf(model.RedisKeyUserLevelLevel, level)
 	res := Redis.GetRedis().Get(key)
 	if res.Err() == nil {
 		err := json.Unmarshal(xstr.String2Bytes(res.Val()), &data)
-		JsonErrTest(err, &errCode)
+		common.JsonErrTest(err, &errCode)
 		return
 	} else {
 		err := ORMDB.Model(&model.UserLevel{}).Where("level = ?", level).First(&data).Error
 		if err != nil {
-			errCode = Err_DB
+			errCode = common.Err_DB
 			return
 		}
 		jsonVal, _ := json.Marshal(data)
@@ -268,16 +269,16 @@ func (this *CBaseUserMgr) GetUserLevelByLevel(level int64) (data model.UserLevel
 	return
 }
 
-func (this *CBaseUserMgr) CreateUserLevelLog(tx *gorm.DB, data *model.UserLevelLog) (errCode EErrCode) {
+func (this *CBaseUserMgr) CreateUserLevelLog(tx *gorm.DB, data *model.UserLevelLog) (errCode common.EErrCode) {
 	err := tx.Model(&model.UserLevelLog{}).Create(&data).Error
 	if err != nil {
-		errCode = Err_DB
+		errCode = common.Err_DB
 		return
 	}
 	return
 }
 
-func (this *CBaseUserMgr) UserLevelJudgeUpgrade(tx *gorm.DB, user model.User, lastExperience int64, userExperienceLogID uint64) (errCode EErrCode) {
+func (this *CBaseUserMgr) UserLevelJudgeUpgrade(tx *gorm.DB, user model.User, lastExperience int64, userExperienceLogID uint64) (errCode common.EErrCode) {
 	nextUserLevel, _ := this.GetUserLevelByLevel(user.Level + 1)
 	if nextUserLevel.ID <= 0 || lastExperience < nextUserLevel.Experience {
 		return
@@ -288,25 +289,25 @@ func (this *CBaseUserMgr) UserLevelJudgeUpgrade(tx *gorm.DB, user model.User, la
 	userLevelLog.BeforeLevel = user.Level
 	userLevelLog.LastLevel = user.Level + 1
 	errCode = this.CreateUserLevelLog(tx, &userLevelLog)
-	if errCode != No_Error {
+	if errCode != common.No_Error {
 		return
 	}
 	//修改等级
 	updateMap := make(map[string]interface{})
 	updateMap["level"] = userLevelLog.LastLevel
 	errCode = this.UserUpdateDB(tx, user.ID, updateMap)
-	if errCode != No_Error {
+	if errCode != common.No_Error {
 		return
 	}
 	//判断角色是否变动
 	errCode = this.UserRoleJudgeUpgrade(tx, user, userLevelLog.LastLevel, userLevelLog.ID)
-	if errCode != No_Error {
+	if errCode != common.No_Error {
 		return
 	}
 	return
 }
 
-func (this *CBaseUserMgr) UserRoleJudgeUpgrade(tx *gorm.DB, user model.User, lastLevel int64, userLevelLogID uint64) (errCode EErrCode) {
+func (this *CBaseUserMgr) UserRoleJudgeUpgrade(tx *gorm.DB, user model.User, lastLevel int64, userLevelLogID uint64) (errCode common.EErrCode) {
 	userRole, _ := this.GetUserRoleByLevel(lastLevel)
 	if userRole.ID <= 0 {
 		return
@@ -317,20 +318,20 @@ func (this *CBaseUserMgr) UserRoleJudgeUpgrade(tx *gorm.DB, user model.User, las
 	userRoleLog.BeforeRoleID = user.SecondaryRoleID
 	userRoleLog.LastRoleID = userRole.ID
 	errCode = this.CreateUserRoleLog(tx, &userRoleLog)
-	if errCode != No_Error {
+	if errCode != common.No_Error {
 		return
 	}
 	//修改角色
 	updateMap := make(map[string]interface{})
 	updateMap["secondary_role_id"] = userRole.ID
 	errCode = this.UserUpdateDB(tx, user.ID, updateMap)
-	if errCode != No_Error {
+	if errCode != common.No_Error {
 		return
 	}
 	return
 }
 
-func (this *CBaseUserMgr) UserExperienceTask(tx *gorm.DB, user model.User, fromUserID uint64, experienceType int8) (errCode EErrCode) {
+func (this *CBaseUserMgr) UserExperienceTask(tx *gorm.DB, user model.User, fromUserID uint64, experienceType int8) (errCode common.EErrCode) {
 	var userExperienceLog model.UserExperienceLog
 	userExperienceLog.UserID = user.ID
 	userExperienceLog.FromUserID = fromUserID
@@ -430,7 +431,7 @@ func (this *CBaseUserMgr) UserExperienceTask(tx *gorm.DB, user model.User, fromU
 			return
 		}
 		defer func() {
-			if errCode == No_Error {
+			if errCode == common.No_Error {
 				Redis.RedisSet(fmt.Sprintf(model.RedisKeyMatchWatchLiveRewards, date, user.ID), fmt.Sprintf("%d", time.Now().Unix()), model.RedisExpirationOneDay*time.Second)
 			}
 		}()
@@ -446,7 +447,7 @@ func (this *CBaseUserMgr) UserExperienceTask(tx *gorm.DB, user model.User, fromU
 			return
 		}
 		defer func() {
-			if errCode == No_Error {
+			if errCode == common.No_Error {
 				Redis.RedisSet(fmt.Sprintf(model.RedisKeyUserDailyOnlineRewards, date, user.ID), fmt.Sprintf("%d", time.Now().Unix()), model.RedisExpirationOneDay*time.Second)
 			}
 		}()
@@ -459,19 +460,19 @@ func (this *CBaseUserMgr) UserExperienceTask(tx *gorm.DB, user model.User, fromU
 	//创建记录
 	userExperienceLog.LastExperienceNum = userExperienceLog.BeforeExperienceNum + userExperienceLog.Num
 	errCode = this.CreateUserExperienceLog(tx, &userExperienceLog)
-	if errCode != No_Error {
+	if errCode != common.No_Error {
 		return
 	}
 	//修改经验值
 	updateMap := make(map[string]interface{})
 	updateMap["experience"] = userExperienceLog.LastExperienceNum
 	errCode = this.UserUpdateDB(tx, user.ID, updateMap)
-	if errCode != No_Error {
+	if errCode != common.No_Error {
 		return
 	}
 	//判断升级
 	errCode = this.UserLevelJudgeUpgrade(tx, user, userExperienceLog.LastExperienceNum, userExperienceLog.ID)
-	if errCode != No_Error {
+	if errCode != common.No_Error {
 		return
 	}
 	return
@@ -500,17 +501,17 @@ func (this *CBaseUserMgr) JudgeAwardWhetherReceive(userID uint64, experienceType
 	return
 }
 
-func (this *CBaseUserMgr) GetUserExperienceLogByType(userID uint64, experienceType int8) (data model.UserExperienceLog, errCode EErrCode) {
+func (this *CBaseUserMgr) GetUserExperienceLogByType(userID uint64, experienceType int8) (data model.UserExperienceLog, errCode common.EErrCode) {
 	key := fmt.Sprintf(model.RedisKeyUserExperienceLogType, userID, experienceType)
 	res := Redis.GetRedis().Get(key)
 	if res.Err() == nil {
 		err := json.Unmarshal(xstr.String2Bytes(res.Val()), &data)
-		JsonErrTest(err, &errCode)
+		common.JsonErrTest(err, &errCode)
 		return
 	} else {
 		err := ORMDB.Model(&model.UserExperienceLog{}).Where("user_id = ? and type = ?", userID, experienceType).Order("id desc").First(&data).Error
 		if err != nil {
-			errCode = Err_DB
+			errCode = common.Err_DB
 			return
 		}
 		jsonVal, _ := json.Marshal(data)
@@ -519,24 +520,24 @@ func (this *CBaseUserMgr) GetUserExperienceLogByType(userID uint64, experienceTy
 	return
 }
 
-func (this *CBaseUserMgr) CreateUserExperienceLog(tx *gorm.DB, data *model.UserExperienceLog) (errCode EErrCode) {
+func (this *CBaseUserMgr) CreateUserExperienceLog(tx *gorm.DB, data *model.UserExperienceLog) (errCode common.EErrCode) {
 	err := tx.Model(&model.UserExperienceLog{}).Create(&data).Error
 	if err != nil {
-		errCode = Err_DB
+		errCode = common.Err_DB
 		return
 	}
 	//清除缓存
 	errCode = this.DeleteUserExperienceLogCache(data.UserID, data.Type)
-	if errCode != No_Error {
+	if errCode != common.No_Error {
 		return
 	}
 	return
 }
 
-func (this *CBaseUserMgr) DeleteUserExperienceLogCache(userID uint64, experienceType int8) (errCode EErrCode) {
+func (this *CBaseUserMgr) DeleteUserExperienceLogCache(userID uint64, experienceType int8) (errCode common.EErrCode) {
 	res := Redis.GetRedis().Del(fmt.Sprintf(model.RedisKeyUserExperienceLogType, userID, experienceType))
 	if res.Err() != nil {
-		errCode = Err_DB
+		errCode = common.Err_DB
 		return
 	}
 	return

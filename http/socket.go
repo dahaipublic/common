@@ -1,8 +1,8 @@
 package blademaster
 
 import (
+	"common/conf"
 	"context"
-	"github.com/dahaipublic/common/conf"
 	"sync"
 
 	"github.com/zishang520/engine.io/v2/types"

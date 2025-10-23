@@ -1,14 +1,15 @@
 package util
 
 import (
-	. "common"
+	"common"
+	"common/util"
 	"time"
 )
 
 // 多语言词库，key 使用 int
 var translations = map[string]map[int]map[int]string{
 	"weekday": {
-		ELan_en_US: {
+		common.ELan_en_US: {
 			1: "Monday",
 			2: "Tuesday",
 			3: "Wednesday",
@@ -17,7 +18,7 @@ var translations = map[string]map[int]map[int]string{
 			6: "Saturday",
 			7: "Sunday",
 		},
-		ELan_zh_CN: {
+		common.ELan_zh_CN: {
 			1: "周一",
 			2: "周二",
 			3: "周三",
@@ -26,7 +27,7 @@ var translations = map[string]map[int]map[int]string{
 			6: "周六",
 			7: "周日",
 		},
-		ELan_tr_TR: {
+		common.ELan_tr_TR: {
 			1: "Pazartesi",
 			2: "Salı",
 			3: "Çarşamba",
@@ -35,7 +36,7 @@ var translations = map[string]map[int]map[int]string{
 			6: "Cumartesi",
 			7: "Pazar",
 		},
-		ELan_ar_EG: {
+		common.ELan_ar_EG: {
 			1: "الاثنين",
 			2: "الثلاثاء",
 			3: "الأربعاء",
@@ -47,7 +48,7 @@ var translations = map[string]map[int]map[int]string{
 	},
 	// 可以继续扩展其他类型，比如 month
 	"month": {
-		ELan_en_US: {
+		common.ELan_en_US: {
 			1:  "January",
 			2:  "February",
 			3:  "March",
@@ -61,7 +62,7 @@ var translations = map[string]map[int]map[int]string{
 			11: "November",
 			12: "December",
 		},
-		ELan_zh_CN: {
+		common.ELan_zh_CN: {
 			1:  "一月",
 			2:  "二月",
 			3:  "三月",
@@ -75,7 +76,7 @@ var translations = map[string]map[int]map[int]string{
 			11: "十一月",
 			12: "十二月",
 		},
-		ELan_tr_TR: {
+		common.ELan_tr_TR: {
 			1:  "Ocak",
 			2:  "Şubat",
 			3:  "Mart",
@@ -89,7 +90,7 @@ var translations = map[string]map[int]map[int]string{
 			11: "Kasım",
 			12: "Aralık",
 		},
-		ELan_ar_EG: {
+		common.ELan_ar_EG: {
 			1:  "يناير",
 			2:  "فبراير",
 			3:  "مارس",
@@ -106,7 +107,7 @@ var translations = map[string]map[int]map[int]string{
 	},
 }
 
-// GetTranslation 根据类型、语言、数字 key 获取对应文字
+// common.GetTranslation 根据类型、语言、数字 key 获取对应文字
 func GetTranslation(content string, lanId, key int) string {
 	// 获取类型
 	typeMap, ok := translations[content]
@@ -126,7 +127,7 @@ func GetTranslation(content string, lanId, key int) string {
 	}
 
 	// 如果该语言没有，尝试英文
-	if val, ok := typeMap[ELan_en_US][key]; ok {
+	if val, ok := typeMap[common.ELan_en_US][key]; ok {
 		return val
 	}
 
@@ -134,11 +135,11 @@ func GetTranslation(content string, lanId, key int) string {
 }
 
 // 根据时间戳返回对应的文字
-func GetWeekTypeByTimestamp(ts int64, lanID ELanDef) string {
+func GetWeekTypeByTimestamp(ts int64, lanID common.ELanDef) string {
 	t := time.Unix(ts, 0).In(time.Local)
 	weekday := int(t.Weekday())
 	if weekday == 0 {
 		weekday = 7 // 周日改成 7
 	}
-	return GetTranslation("weekday", lanID, weekday)
+	return util.GetTranslation("weekday", lanID, weekday)
 }

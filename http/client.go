@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	xtime "github.com/dahaipublic/common/time"
+	xtime "common/time"
 	xhttp "net/http"
 
 	pkgerr "github.com/pkg/errors"
