@@ -8,7 +8,7 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20180501/v2 v2.0.6
 	github.com/alibabacloud-go/tea v1.3.8
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.7
-	github.com/aliyun/alibaba-cloud-sdk-go v1.63.107
+	github.com/dahaipublic/alibaba-cloud-sdk-go v1.63.108
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.10.0
