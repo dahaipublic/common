@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
-	"github.com/aliyun/alibaba-cloud-sdk-go/services/live"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/dahaipublic/alibaba-cloud-sdk-go/sdk/requests"
+	"github.com/dahaipublic/alibaba-cloud-sdk-go/services/live"
 )
 
 // 增加直播录制转点播配置，将录制内容保存到点播媒资库
@@ -24,8 +24,6 @@ func AddLiveRecordVodConfig(streamName string) (err error) {
 	}
 
 	request := live.CreateAddLiveRecordVodConfigRequest()
-
-	request.Scheme = "https"
 
 	request.StreamName = streamName
 	request.DomainName = conf.Conf.AliyunCloud.Live.DomainName
@@ -50,7 +48,6 @@ func DeleteLiveRecordVodConfig(streamName string) (err error) {
 
 	request := live.CreateDeleteLiveRecordVodConfigRequest()
 
-	request.Scheme = "https"
 	request.DomainName = conf.Conf.AliyunCloud.Live.DomainName
 	request.AppName = conf.Conf.AliyunCloud.Live.AppName
 	request.StreamName = streamName
